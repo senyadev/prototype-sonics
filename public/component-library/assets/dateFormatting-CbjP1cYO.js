@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DkW27tQK.js";function t(e,t){let n=new Intl.DateTimeFormat(e,{...t,timeZone:`UTC`});return e=>n.format(new Date(`${e}T00:00:00Z`))}function n(){return(n=e((()=>{})))()}export{n,t};

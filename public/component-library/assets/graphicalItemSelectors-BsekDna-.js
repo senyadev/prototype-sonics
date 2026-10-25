@@ -1,0 +1,1 @@
+import{D as e}from"./CategoricalChart-CVxUXC_U.js";import{n as t}from"./rolldown-runtime-DkW27tQK.js";function n(e,t){return e.graphicalItems.cartesianItems.find(e=>e.id===t)?.xAxisId??0}function r(e,t){return e.graphicalItems.cartesianItems.find(e=>e.id===t)?.yAxisId??0}function i(){return(i=t((()=>{e()})))()}export{n,r,i as t};

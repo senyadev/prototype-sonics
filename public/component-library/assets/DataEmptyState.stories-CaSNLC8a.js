@@ -1,0 +1,5 @@
+import{n as e}from"./iframe-BzXzTfmr.js";import{i as t,r as n}from"./Icon-DcOdqD_T.js";import{n as r,t as i}from"./DataEmptyState-DdL-LaU4.js";import{n as a}from"./rolldown-runtime-DkW27tQK.js";var o,s,c,l,u;function d(){return(d=a((()=>{t(),r(),o=e(),s={title:`ui-kit/states/DataEmptyState`,component:i,args:{iconName:n.Question,title:`Данных пока нет`,description:`Здесь пока нечего отображать. Попробуйте изменить параметры или вернуться позже.`},argTypes:{title:{control:`text`},description:{control:`text`},className:{control:!1},actionSlot:{control:!1}}},c={},l={args:{actionSlot:(0,o.jsx)(`a`,{href:`/stations`,children:`Посмотреть станции`})}},u=[`Default`,`WithAction`],c.parameters={...c.parameters,docs:{...c.parameters?.docs,source:{originalSource:`{}`,...c.parameters?.docs?.source}}},l.parameters={...l.parameters,docs:{...l.parameters?.docs,source:{originalSource:`{
+  args: {
+    actionSlot: <a href="/stations">Посмотреть станции</a>
+  }
+}`,...l.parameters?.docs?.source}}}})))()}d();export{c as Default,l as WithAction,u as __namedExportsOrder,s as default};

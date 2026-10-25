@@ -1,0 +1,266 @@
+[
+  {
+    "name": "heading-h1",
+    "family": "Inter",
+    "size": 64,
+    "weight": 600,
+    "lineHeight": 1.1,
+    "uppercase": false
+  },
+  {
+    "name": "heading-h2",
+    "family": "Inter",
+    "size": 32,
+    "weight": 600,
+    "lineHeight": 1.1,
+    "uppercase": false
+  },
+  {
+    "name": "heading-h3",
+    "family": "Inter",
+    "size": 28,
+    "weight": 600,
+    "lineHeight": 1.1,
+    "uppercase": false
+  },
+  {
+    "name": "body-large-semibold",
+    "family": "Inter",
+    "size": 24,
+    "weight": 600,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "body-large-medium",
+    "family": "Inter",
+    "size": 24,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "body-medium-semibold",
+    "family": "Inter",
+    "size": 20,
+    "weight": 600,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "body-medium-medium",
+    "family": "Inter",
+    "size": 20,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "body-small-semibold",
+    "family": "Inter",
+    "size": 16,
+    "weight": 600,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "body-small-medium",
+    "family": "Inter",
+    "size": 16,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "buttons-large",
+    "family": "Inter",
+    "size": 20,
+    "weight": 500,
+    "lineHeight": 1.0,
+    "uppercase": false
+  },
+  {
+    "name": "buttons-small",
+    "family": "Inter",
+    "size": 16,
+    "weight": 500,
+    "lineHeight": 1.0,
+    "uppercase": false
+  },
+  {
+    "name": "table-head",
+    "family": "Inter",
+    "size": 14,
+    "weight": 600,
+    "lineHeight": 1.15,
+    "uppercase": true
+  },
+  {
+    "name": "table-body-large",
+    "family": "Inter",
+    "size": 16,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "table-body-medium",
+    "family": "Inter",
+    "size": 14,
+    "weight": 500,
+    "lineHeight": 1.0,
+    "uppercase": false
+  },
+  {
+    "name": "table-body-small",
+    "family": "Inter",
+    "size": 12,
+    "weight": 500,
+    "lineHeight": 1.0,
+    "uppercase": false
+  },
+  {
+    "name": "caption-large-semibold",
+    "family": "Inter",
+    "size": 16,
+    "weight": 600,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "caption-large-medium",
+    "family": "Inter",
+    "size": 16,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "caption-medium-semibold",
+    "family": "Inter",
+    "size": 14,
+    "weight": 600,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "caption-medium-medium",
+    "family": "Inter",
+    "size": 14,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "caption-small-semibold",
+    "family": "Inter",
+    "size": 12,
+    "weight": 600,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "caption-small-medium",
+    "family": "Inter",
+    "size": 12,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "title-large-semibold",
+    "family": "Inter",
+    "size": 16,
+    "weight": 600,
+    "lineHeight": 1.2,
+    "uppercase": true
+  },
+  {
+    "name": "title-large-medium",
+    "family": "Inter",
+    "size": 16,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": true
+  },
+  {
+    "name": "title-medium-semibold",
+    "family": "Inter",
+    "size": 14,
+    "weight": 600,
+    "lineHeight": 1.2,
+    "uppercase": true
+  },
+  {
+    "name": "title-medium-medium",
+    "family": "Inter",
+    "size": 14,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": true
+  },
+  {
+    "name": "title-small-semibold",
+    "family": "Inter",
+    "size": 12,
+    "weight": 600,
+    "lineHeight": 1.2,
+    "uppercase": true
+  },
+  {
+    "name": "title-small-medium",
+    "family": "Inter",
+    "size": 12,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": true
+  },
+  {
+    "name": "caption-mono-large-medium",
+    "family": "Roboto Mono",
+    "size": 16,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "caption-mono-large-regular",
+    "family": "Roboto Mono",
+    "size": 16,
+    "weight": 400,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "caption-mono-medium-medium",
+    "family": "Roboto Mono",
+    "size": 14,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "caption-mono-medium-regular",
+    "family": "Roboto Mono",
+    "size": 14,
+    "weight": 400,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "caption-mono-small-medium",
+    "family": "Roboto Mono",
+    "size": 12,
+    "weight": 500,
+    "lineHeight": 1.2,
+    "uppercase": false
+  },
+  {
+    "name": "caption-mono-small-regular",
+    "family": "Roboto Mono",
+    "size": 12,
+    "weight": 400,
+    "lineHeight": 1.2,
+    "uppercase": false
+  }
+]

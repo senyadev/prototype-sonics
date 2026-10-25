@@ -1,0 +1,5 @@
+import{n as e}from"./iframe-BzXzTfmr.js";import{n as t}from"./rolldown-runtime-DkW27tQK.js";var n,r;function i(){return(i=t((()=>{n=`_stroke_jca0z_1`,r={stroke:n}})))()}function a(e){let{text:t}=e;return(0,o.jsx)(`div`,{className:r.stroke,children:t})}var o;function s(){return(s=t((()=>{i(),o=e(),a.__docgenInfo={description:``,methods:[],displayName:`Stroke`,props:{text:{required:!0,tsType:{name:`string`},description:``}}}})))()}var c,l,u;function d(){return(d=t((()=>{s(),c={title:`ui-kit/stroke/Stroke`,component:a,argTypes:{text:{control:`text`}}},l={args:{text:`Stroke`}},u=[`Primary`],l.parameters={...l.parameters,docs:{...l.parameters?.docs,source:{originalSource:`{
+  args: {
+    text: "Stroke"
+  }
+}`,...l.parameters?.docs?.source}}}})))()}d();export{l as Primary,u as __namedExportsOrder,c as default};

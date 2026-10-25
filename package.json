@@ -1,0 +1,39 @@
+{
+  "name": "sonik-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@1.4.2",
+  "scripts": {
+    "catalog:update": "node scripts/update-catalog.mjs",
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@fontsource/inter": "5.2.8",
+    "@fontsource/roboto-mono": "5.2.8",
+    "@sonik-space/icons": "file:vendor/sonik-space-icons-0.1.6.tgz",
+    "@sonik-space/tokens": "file:vendor/sonik-space-tokens-0.1.6.tgz",
+    "@sonik-space/ui": "file:vendor/sonik-space-ui-0.1.6.tgz",
+    "d3-geo": "^3.1.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-is": "19.3.0",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
+  },
+  "overrides": {
+    "@sonik-space/icons": "file:vendor/sonik-space-icons-0.1.6.tgz",
+    "@sonik-space/tokens": "file:vendor/sonik-space-tokens-0.1.6.tgz"
+  },
+  "devDependencies": {
+    "@types/d3-geo": "^3.1.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/topojson-client": "^3.1.5",
+    "@vitejs/plugin-react": "6.1.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.0"
+  }
+}

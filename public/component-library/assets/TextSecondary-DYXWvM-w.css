@@ -1,0 +1,1 @@
+._secondary_zcheb_1{color:var(--text-secondary-default);text-align:center;text-overflow:ellipsis;overflow:hidden}@media (hover:hover) and (pointer:fine){._secondary_zcheb_1:hover{color:var(--text-secondary-hover)}}@media (hover:none) and (pointer:coarse){._secondary_zcheb_1:active{color:var(--text-secondary-hover)}}._secondary_zcheb_1:active{color:var(--text-secondary-active)}

@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DkW27tQK.js";function t(e){return{"data-size-laptop-l":e.laptopL,"data-size-mobile":e.mobile}}function n(){return(n=e((()=>{})))()}export{n,t};

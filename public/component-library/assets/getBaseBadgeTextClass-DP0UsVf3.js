@@ -1,0 +1,1 @@
+import{n as e,t}from"./clsx-CTwy9ux-.js";import{a as n,i as r,n as i,o as a}from"./BaseBadge-D31GTOn4.js";import{n as o}from"./rolldown-runtime-DkW27tQK.js";function s(e){switch(e){case i.BIG:return t(n.text,n.bigText);case i.MEDIUM:return t(n.text,n.mediumText);case i.SMALL:return t(n.text,n.smallText)}}function c(){return(c=o((()=>{e(),r(),a()})))()}export{c as n,s as t};

@@ -1,0 +1,74 @@
+.station-globe {
+  --globe-ocean-light: #fcfcfc;
+  --globe-ocean-mid: #eeeeee;
+  --globe-ocean-edge: #d5d5d5;
+  --globe-atmosphere: #888888;
+  --globe-outline: #c2c2c2;
+  --globe-grid: #999999;
+  --globe-land: #c4c4c4;
+  --globe-coast: #a3a3a3;
+  --globe-shadow-opacity: 0.12;
+  --globe-online: #222222;
+  --globe-testing: #424242;
+  --globe-unavailable: #555555;
+  --globe-were-online: #686868;
+  --globe-offline: #7c7c7c;
+  --globe-never: #8b8b8b;
+  --globe-marker-border: #f8f8f8;
+  --globe-marker-active: #111111;
+  position: relative;
+  min-width: 0;
+  align-self: center;
+  font-family: var(--font-inter);
+}
+
+.globe-canvas {
+  display: block;
+  width: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+.globe-canvas:active {
+  cursor: grabbing;
+}
+.globe-canvas:focus {
+  outline: none;
+}
+.globe-canvas:focus-visible {
+  outline: 1px solid var(--surface-stroke);
+  border-radius: 50%;
+}
+.globe-source {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-secondary-default);
+}
+.globe-credit {
+  text-align: center;
+  font-size: 9px;
+  color: var(--text-secondary-default);
+  line-height: 1.6;
+  margin: 0;
+}
+.globe-credit a:hover {
+  text-decoration: underline;
+}
+.dark .station-globe {
+  --globe-ocean-light: #454545;
+  --globe-ocean-mid: #242424;
+  --globe-ocean-edge: #0c0c0c;
+  --globe-atmosphere: #d6d6d6;
+  --globe-outline: #727272;
+  --globe-grid: #777777;
+  --globe-land: #555555;
+  --globe-coast: #929292;
+  --globe-shadow-opacity: 0.52;
+  --globe-online: #ffffff;
+  --globe-testing: #d0d0d0;
+  --globe-unavailable: #a8a8a8;
+  --globe-were-online: #888888;
+  --globe-offline: #606060;
+  --globe-never: #bababa;
+  --globe-marker-border: #202020;
+  --globe-marker-active: #ffffff;
+}
