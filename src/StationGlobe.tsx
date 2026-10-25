@@ -1,3 +1,4 @@
+import { publicPath } from "./paths";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { geoDistance, geoGraticule10, geoOrthographic, geoPath } from "d3-geo";
 import type { GeoPermissibleObjects } from "d3-geo";
@@ -57,6 +58,8 @@ export default function StationGlobe() {
     async function load() {
       setSource("Обновляем станции…");
       try {
+        if (import.meta.env.VITE_STATIC_HOST === "true")
+          throw new Error("Static host");
         const response = await fetch("/api/sonik/stations", {
           signal: controller.signal,
         });
@@ -69,7 +72,7 @@ export default function StationGlobe() {
         }
       } catch {
         try {
-          const response = await fetch("/data/stations.json");
+          const response = await fetch(publicPath("/data/stations.json"));
           if (!response.ok) throw new Error("Snapshot unavailable");
           const data = await response.json();
           if (!validStations(data.stations))

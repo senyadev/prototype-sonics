@@ -1,3 +1,4 @@
+import { publicPath } from "./paths";
 import {
   useEffect,
   useRef,
@@ -8,7 +9,12 @@ import {
 import { Header } from "@sonik-space/ui/shell";
 import { Button, ButtonType, ThemeToggle } from "@sonik-space/ui/buttons";
 import { Input, TextArea } from "@sonik-space/ui/inputs";
-import { ArrowIcon, CheckIcon, LogotypeIcon, LogotypeDarkIcon } from "@sonik-space/icons";
+import {
+  ArrowIcon,
+  CheckIcon,
+  LogotypeIcon,
+  LogotypeDarkIcon,
+} from "@sonik-space/icons";
 import {
   initialDraft,
   newAntenna,
@@ -230,7 +236,7 @@ export default function CreateStation() {
     <div className="create-station">
       <Header
         brand={
-          <a href="/" aria-label="СОНИКС — главная">
+          <a href={publicPath("/")} aria-label="СОНИКС — главная">
             <Logo width={98} height={46} />
           </a>
         }
@@ -240,8 +246,13 @@ export default function CreateStation() {
       <main className="station-main">
         {!saved && (
           <>
-            <a className="station-back" href="/">
-              <ArrowIcon width={18} height={18} fill="currentColor" aria-hidden="true" />
+            <a className="station-back" href={publicPath("/")}>
+              <ArrowIcon
+                width={18}
+                height={18}
+                fill="currentColor"
+                aria-hidden="true"
+              />
               В личный кабинет
             </a>
             <div className="station-page-heading">
@@ -291,7 +302,7 @@ export default function CreateStation() {
           <section className="station-success">
             <img
               className="station-success-image"
-              src="/img/image%2041.png"
+              src={publicPath("/img/image%2041.png")}
               alt="Наземная станция СОНИКС"
               width={304}
               height={247}
@@ -336,7 +347,7 @@ export default function CreateStation() {
               type="button"
               text="В личный кабинет"
               onClick={() => {
-                window.location.href = "/stations/new";
+                window.location.href = publicPath("/stations/new/");
               }}
             />
           </section>

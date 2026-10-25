@@ -1,3 +1,4 @@
+import { publicPath } from "./paths";
 import { useEffect, useMemo, useState } from "react";
 import { ThemeToggle } from "@sonik-space/ui/buttons";
 import "@fontsource/roboto-mono/400.css";
@@ -43,7 +44,9 @@ export default function DesignSystem() {
   useEffect(() => {
     const controller = new AbortController();
     setError(false);
-    fetch("/component-library/index.json", { signal: controller.signal })
+    fetch(publicPath("/component-library/index.json"), {
+      signal: controller.signal,
+    })
       .then((response) => {
         if (!response.ok) throw new Error("Index unavailable");
         return response.json() as Promise<StoryIndex>;
@@ -76,7 +79,7 @@ export default function DesignSystem() {
     window.history.replaceState(
       null,
       "",
-      `/design-system?story=${encodeURIComponent(id)}`,
+      publicPath(`/design-system/?story=${encodeURIComponent(id)}`),
     );
   }
   function changeSection(next: Section) {
@@ -86,18 +89,18 @@ export default function DesignSystem() {
       null,
       "",
       next === "components" && selectedId
-        ? `/design-system?story=${encodeURIComponent(selectedId)}`
-        : "/design-system",
+        ? publicPath(`/design-system/?story=${encodeURIComponent(selectedId)}`)
+        : publicPath("/design-system/"),
     );
   }
   return (
     <div className="ds-page">
       <header className="ds-header">
-        <a href="/" className="ds-wordmark">
+        <a href={publicPath("/")} className="ds-wordmark">
           SONIKS<span> / DESIGN SYSTEM</span>
         </a>
         <div>
-          <a href="/">← На главную</a>
+          <a href={publicPath("/")}>← На главную</a>
           <ThemeToggle
             theme={theme}
             onThemeChange={setTheme}
@@ -135,7 +138,10 @@ export default function DesignSystem() {
             <br />
             Интерактивные примеры.
           </div>
-          <a href="/component-library/" className="ds-storybook-link">
+          <a
+            href={publicPath("/component-library/")}
+            className="ds-storybook-link"
+          >
             Открыть полный Storybook ↗
           </a>
         </aside>
@@ -289,7 +295,9 @@ export default function DesignSystem() {
                         <div className="ds-preview-title">
                           <h2>{selected.title.replace(/^ui-kit\//, "")}</h2>
                           <a
-                            href={`/component-library/?path=/story/${selected.id}`}
+                            href={publicPath(
+                              `/component-library/?path=/story/${selected.id}`,
+                            )}
                             target="_blank"
                             rel="noreferrer"
                           >
@@ -327,7 +335,9 @@ export default function DesignSystem() {
                             key={`${selected.id}-${theme}`}
                             title={`${selected.title} — ${selected.name}`}
                             style={{ width }}
-                            src={`/component-library/iframe.html?id=${encodeURIComponent(selected.id)}&viewMode=story&globals=theme:${theme}`}
+                            src={publicPath(
+                              `/component-library/iframe.html?id=${encodeURIComponent(selected.id)}&viewMode=story&globals=theme:${theme}`,
+                            )}
                           />
                         </div>
                         <p className="ds-footnote">

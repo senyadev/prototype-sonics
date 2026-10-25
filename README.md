@@ -82,3 +82,14 @@ bun pm pack --ignore-scripts --destination /absolute/path/to/sonik-prototype/ven
 Для перехода на опубликованные пакеты используйте инструкции `docs/releasing.md`
 исходного репозитория и токен с `read:packages`, передаваемый через окружение.
 Не сохраняйте секреты в проекте.
+
+## GitHub Pages
+
+Публикация на https://senyadev.github.io/prototype-sonics/ выполняется workflow
+`.github/workflows/deploy.yml` при push в `main`. В Settings → Pages выбран источник GitHub Actions.
+Workflow устанавливает зависимости, запускает тесты и публикует `dist`.
+`VITE_BASE_PATH=/prototype-sonics/` задаёт префикс ресурсов и ссылок;
+`VITE_STATIC_HOST=true` включает сохранённые данные станций без серверного прокси.
+Локальный `bun run dev` продолжает работать от корня сайта с живыми данными.
+После сборки `scripts/prepare-pages.mjs` создаёт HTML для `/stations/new/`
+и `/design-system/`, чтобы прямые ссылки работали на статическом хостинге.

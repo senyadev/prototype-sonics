@@ -1,3 +1,4 @@
+import { publicPath, currentRoute } from "./paths";
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "@fontsource/inter/400.css";
@@ -36,7 +37,11 @@ function App() {
       </a>
       <Header
         brand={
-          <a href="/" aria-label="СОНИКС — главная" className="brand">
+          <a
+            href={publicPath("/")}
+            aria-label="СОНИКС — главная"
+            className="brand"
+          >
             <Logo width={98} height={46} />
           </a>
         }
@@ -108,8 +113,8 @@ function App() {
       </main>
       <footer className="home-footer">
         <span>СОНИКС</span>
-        <a href="/stations/new">Создать станцию</a>
-        <a href="/design-system">Дизайн-система</a>
+        <a href={publicPath("/stations/new/")}>Создать станцию</a>
+        <a href={publicPath("/design-system/")}>Дизайн-система</a>
       </footer>
     </div>
   );
@@ -118,9 +123,9 @@ function App() {
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Suspense fallback={<p role="status">Загрузка…</p>}>
-      {window.location.pathname.replace(/\/$/, "") === "/design-system" ? (
+      {currentRoute() === "/design-system" ? (
         <DesignSystem />
-      ) : window.location.pathname.replace(/\/$/, "") === "/stations/new" ? (
+      ) : currentRoute() === "/stations/new" ? (
         <CreateStation />
       ) : (
         <App />
