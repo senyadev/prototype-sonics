@@ -43,6 +43,14 @@
   padding: 0;
   margin: 0 0 48px;
 }
+/* Полоса прижата к низу: при переносе подписи полосы остаются на одной линии. */
+.station-progress li {
+  display: flex;
+  flex-direction: column;
+}
+.progress-segment {
+  margin-top: auto;
+}
 .station-progress li button {
   border: 0;
   background: transparent;
@@ -56,6 +64,9 @@
   width: 100%;
   cursor: pointer;
   line-height: 1.4;
+}
+.step-label-short {
+  display: none;
 }
 .station-progress li button:disabled {
   cursor: default;
@@ -126,15 +137,22 @@
   min-width: 0;
   margin-bottom: 22px;
 }
-.station-field > label {
+.station-field > label,
+.station-field > .station-field-label {
   display: block;
   font-size: 13px;
   margin-bottom: 10px;
 }
-.station-field > label > span:not(.optional-label) {
+.station-field > label > span:not(.optional-label),
+.station-field > .station-field-label > span {
   color: var(--text-action-default);
 }
-.station-field-grid {
+.station-select {
+  width: 100%;
+}
+.station-select.invalid [role="combobox"] {
+  border-color: var(--input-text-error);
+}.station-field-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0 22px;
@@ -145,6 +163,12 @@
 .station-field input,
 .station-field textarea {
   width: 100%;
+}
+/* Дизайн-система затемняет плейсхолдер при фокусе — пример значения выглядит
+   как введённое. Оставляем его серым; в состоянии ошибки цвет не трогаем. */
+.station-field input:not([aria-invalid="true"]):focus::placeholder,
+.station-field textarea:focus::placeholder {
+  color: var(--inputs-search-text-default);
 }
 .field-hint,
 .field-error {
@@ -208,20 +232,21 @@
   font-weight: 500;
   margin: 0;
 }
-.antenna-card-heading button,
-.station-photos button {
-  background: none;
-  border: 0;
-  font-size: 11px;
-  color: var(--text-secondary-default);
-  cursor: pointer;
-  padding: 5px;
+/* Крестик в шапке карточки антенны: компенсируем внутренний отступ кнопки,
+   чтобы иконка стояла по правому краю контента. */
+.antenna-card-heading .station-remove {
+  margin: -12px -10px -12px 0;
 }
-.antenna-card-heading button:hover,
-.station-photos button:hover {
-  color: var(--input-text-error);
+.station-remove:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
-.antenna-card-heading button:disabled {
+/* «Дополнительная антенна» — по центру под карточками. */
+.antenna-add {
+  display: flex;
+  margin: 4px auto 0;
+}
+.antenna-add:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
@@ -286,10 +311,21 @@
   gap: 16px;
 }
 .station-photos article {
+  position: relative;
   border: 1px solid var(--surface-stroke);
   border-radius: 9px;
   overflow: hidden;
   min-width: 0;
+}
+.station-photos .photo-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  /* Тёмная подложка, чтобы белый крестик читался и на светлых фото. */
+  background: rgb(0 0 0 / 0.45);
 }
 .station-photos article.main-photo {
   border-color: var(--text-action-default);
@@ -312,11 +348,11 @@
   font-size: 10px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
   cursor: pointer;
 }
-.station-photos input {
-  accent-color: var(--buttons-primary-bg);
+.station-photos input[type="radio"] {
+  flex-shrink: 0;
 }
 .station-summary {
   margin-top: 32px;
@@ -349,23 +385,42 @@
   overflow-wrap: anywhere;
   max-width: 65%;
 }
-.station-summary > p {
-  font-size: 11px;
-  line-height: 1.7;
-  color: var(--text-secondary-default);
-  margin: 24px 0 0;
-}
 .station-success {
   max-width: 500px;
   margin: 0 auto;
   padding: 10px 0;
   text-align: center;
 }
+.station-confetti {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
 .station-success-image {
-  display: block;
+  position: relative;
   width: min(304px, 100%);
-  height: auto;
   margin: 0 auto 24px;
+}
+.station-success-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Градиент поверх картинки: снизу цвет фона, кверху прозрачный.
+   --surface-bg-2 в светлой теме — #fff, в тёмной подставляется тёмный фон. */
+.station-success-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--surface-bg-2) 81.55%
+  );
 }
 .station-success dl {
   text-align: left;
@@ -387,8 +442,12 @@
   color: var(--text-action-default);
 }
 @media (max-width: 600px) {
+  /* Один боковой отступ у шапки и контента. */
+  .create-station header > div {
+    padding-inline: 16px;
+  }
   .station-main {
-    padding: 24px 20px 50px;
+    padding: 24px 16px 48px;
   }
   .station-page-heading {
     margin: 24px 0 30px;
@@ -403,15 +462,29 @@
     gap: 8px;
     margin-bottom: 32px;
   }
+  /* Номер над подписью: подписям достаётся вся ширина колонки. */
   .station-progress li button {
-    font-size: 10px;
-    gap: 7px;
+    flex-direction: column;
     align-items: flex-start;
-    min-height: 55px;
+    font-size: 11px;
+    gap: 8px;
+    padding-bottom: 12px;
   }
   .step-number {
-    width: 21px;
-    height: 21px;
+    width: 24px;
+    height: 24px;
+  }
+  /* На мобилке видна короткая подпись; полная остаётся для скринридеров. */
+  .station-progress .step-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .station-progress .step-label-short {
+    display: inline;
   }
   .station-field-grid {
     grid-template-columns: 1fr;
@@ -430,9 +503,10 @@
     height: 115px;
   }
   .station-photos article > div {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 8px;
+    padding: 8px 10px;
+  }
+  .station-photos label {
+    min-height: 28px;
   }
   .optional-label {
     display: inline-block;
@@ -440,7 +514,20 @@
   .station-summary {
     padding: 18px;
   }
+  /* Кнопки во всю ширину столбиком, основное действие сверху. */
   .station-form-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
     margin-top: 28px;
+  }
+  .station-form-actions > div:empty {
+    display: none;
+  }
+  .station-form-actions > button {
+    order: -1;
+  }
+  .station-form-actions button {
+    width: 100%;
   }
 }

@@ -7,11 +7,22 @@ import {
   type FormEvent,
 } from "react";
 import { Header } from "@sonik-space/ui/shell";
-import { Button, ButtonType, ThemeToggle } from "@sonik-space/ui/buttons";
+import {
+  Button,
+  ButtonType,
+  IconButton,
+  IconButtonType,
+  TextButton,
+  TextButtonType,
+  ThemeToggle,
+} from "@sonik-space/ui/buttons";
 import { Input, TextArea } from "@sonik-space/ui/inputs";
+import { Radio } from "@sonik-space/ui/checkbox";
+import { Selector } from "@sonik-space/ui/selectors";
 import {
   ArrowIcon,
   CheckIcon,
+  IconName,
   LogotypeIcon,
   LogotypeDarkIcon,
 } from "@sonik-space/icons";
@@ -26,9 +37,12 @@ import {
   type StationDraft,
   type StationPhoto,
 } from "./station/model";
+import Confetti from "./station/Confetti";
 import "./station/create.css";
 
 const stages = ["Станция", "Антенны", "Описание и фото"];
+// Короткие подписи для мобильного степпера.
+const stagesShort = ["Станция", "Антенны", "Описание"];
 const titles = ["Основные данные", "Антенны станции", "Расскажите о станции"];
 const notes = [
   "Название и расположение станции. Все поля на этом этапе обязательны.",
@@ -36,6 +50,19 @@ const notes = [
   "Необязательный этап. Описание и фотографии можно не добавлять.",
 ];
 type FieldKey = "name" | "latitude" | "longitude" | "altitude" | "horizon";
+const antennaTypes = [
+  "Диполь",
+  "Яги",
+  "Турникетная",
+  "Квадрифилярная",
+  "Параболическая",
+  "Спиральная",
+  "Дисконусная",
+];
+const antennaTypeOptions = antennaTypes.map((type) => ({
+  value: type,
+  label: type,
+}));
 
 export default function CreateStation() {
   const [draft, setDraft] = useState(initialDraft);
@@ -47,8 +74,7 @@ export default function CreateStation() {
   const [processing, setProcessing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">(() =>
+  const [saved, setSaved] = useState(false);  const [theme, setTheme] = useState<"light" | "dark">(() =>
     document.documentElement.classList.contains("dark") ? "dark" : "light",
   );
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -96,7 +122,9 @@ export default function CreateStation() {
   function focusError() {
     requestAnimationFrame(() =>
       document
-        .querySelector<HTMLElement>('.create-station [aria-invalid="true"]')
+        .querySelector<HTMLElement>(
+          '.create-station [aria-invalid="true"], .create-station .station-select.invalid [role="combobox"]',
+        )
         ?.focus(),
     );
   }
@@ -290,7 +318,10 @@ export default function CreateStation() {
                         i + 1
                       )}
                     </span>
-                    <span>{stage}</span>
+                    <span className="step-label">{stage}</span>
+                    <span className="step-label-short" aria-hidden="true">
+                      {stagesShort[i]}
+                    </span>
                   </button>
                   <div className="progress-segment" />
                 </li>
@@ -300,20 +331,19 @@ export default function CreateStation() {
         )}
         {saved ? (
           <section className="station-success">
-            <img
-              className="station-success-image"
-              src={publicPath("/img/image%2041.png")}
-              alt="Наземная станция СОНИКС"
-              width={304}
-              height={247}
-            />
+            <Confetti />
+            <div className="station-success-image">
+              <img
+                src={publicPath("/img/stantion.png")}
+                alt="Наземная станция СОНИКС"
+                width={304}
+                height={247}
+              />
+            </div>
             <h2 ref={titleRef} tabIndex={-1}>
               Станция создана
             </h2>
-            <p>
-              «{draft.name.trim()}» сохранена в этом браузере вместе с антеннами
-              и фотографиями. В сеть СОНИКС она пока не опубликована.
-            </p>
+            <p>Она появится в вашем профиле в списке станций</p>
             <dl>
               <div>
                 <dt>Название</dt>
@@ -420,8 +450,11 @@ export default function CreateStation() {
                     >
                       <div className="antenna-card-heading">
                         <h3>Антенна {index + 1}</h3>
-                        <button
+                        <IconButton
                           type="button"
+                          className="station-remove"
+                          iconName={IconName.Cross}
+                          buttonType={IconButtonType.TERTIARY}
                           disabled={draft.antennas.length === 1}
                           onClick={() => {
                             setDraft((current) => ({
@@ -433,24 +466,57 @@ export default function CreateStation() {
                             setErrors({});
                           }}
                           aria-label={`Удалить антенну ${index + 1}`}
-                        >
-                          Удалить
-                        </button>
+                          title="Удалить антенну"
+                        />
                       </div>
                       <div className="station-field-grid">
-                        {(["type", "min", "max"] as const).map((key) => {
+                        {(() => {
+                          const id = `${antenna.id}-type`;
+                          return (
+                            <div className="station-field field-full">
+                              <span
+                                className="station-field-label"
+                                id={`${id}-label`}
+                              >
+                                Тип антенны <span aria-hidden="true">*</span>
+                              </span>
+                              {/* Selector не принимает id и не связывает подпись —
+                                  называем поле через группу. */}
+                              <div role="group" aria-labelledby={`${id}-label`}>
+                              <Selector
+                                className={`station-select ${errors[id] ? "invalid" : ""}`}
+                                options={antennaTypeOptions}
+                                value={antenna.type || null}
+                                placeholder="Выберите тип"
+                                onChange={(value) => {
+                                  setDraft((current) => ({
+                                    ...current,
+                                    antennas: current.antennas.map((a) =>
+                                      a.id === antenna.id
+                                        ? { ...a, type: value || "" }
+                                        : a,
+                                    ),
+                                  }));
+                                  clearError(id);
+                                }}
+                              />
+                              </div>
+                              {errors[id] && (
+                                <p className="field-error" id={`${id}-error`}>
+                                  {errors[id]}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })()}
+                        {(["min", "max"] as const).map((key) => {
                           const id = `${antenna.id}-${key}`;
                           const label =
-                            key === "type"
-                              ? "Тип антенны"
-                              : key === "min"
-                                ? "Минимальная частота, МГц"
-                                : "Максимальная частота, МГц";
+                            key === "min"
+                              ? "Минимальная частота, МГц"
+                              : "Максимальная частота, МГц";
                           return (
-                            <div
-                              key={id}
-                              className={`station-field ${key === "type" ? "field-full" : ""}`}
-                            >
+                            <div key={id} className="station-field">
                               <label htmlFor={id}>
                                 {label} <span aria-hidden="true">*</span>
                               </label>
@@ -459,17 +525,8 @@ export default function CreateStation() {
                                 showTitle={false}
                                 required
                                 value={antenna[key]}
-                                list={
-                                  key === "type" ? "antenna-types" : undefined
-                                }
-                                inputMode={key === "type" ? "text" : "decimal"}
-                                placeholder={
-                                  key === "type"
-                                    ? "Выберите или введите тип"
-                                    : key === "min"
-                                      ? "144"
-                                      : "146"
-                                }
+                                inputMode="decimal"
+                                placeholder={key === "min" ? "144" : "146"}
                                 error={!!errors[id]}
                                 aria-invalid={!!errors[id]}
                                 aria-describedby={
@@ -499,23 +556,12 @@ export default function CreateStation() {
                       </div>
                     </section>
                   ))}
-                  <datalist id="antenna-types">
-                    {[
-                      "Диполь",
-                      "Яги",
-                      "Турникетная",
-                      "Квадрифилярная",
-                      "Параболическая",
-                      "Спиральная",
-                      "Дисконусная",
-                    ].map((type) => (
-                      <option key={type} value={type} />
-                    ))}
-                  </datalist>
-                  <Button
+                  <TextButton
                     type="button"
-                    text="Добавить антенну"
-                    buttonType={ButtonType.GRAY}
+                    className="antenna-add"
+                    text="Дополнительная антенна"
+                    leftIcon={IconName.Plus}
+                    buttonType={TextButtonType.PRIMARY}
                     disabled={draft.antennas.length >= 10}
                     onClick={() =>
                       setDraft((current) => ({
@@ -589,26 +635,27 @@ export default function CreateStation() {
                         className={mainId === photo.id ? "main-photo" : ""}
                       >
                         <img src={photo.url} alt={photo.file.name} />
+                        <IconButton
+                          type="button"
+                          className="station-remove photo-remove"
+                          iconName={IconName.Cross}
+                          buttonType={IconButtonType.WHITE}
+                          disabled={processing}
+                          onClick={() => removePhoto(photo.id)}
+                          aria-label={`Удалить фото ${photo.file.name}`}
+                          title="Удалить фото"
+                        />
                         <div>
                           <label>
-                            <input
-                              type="radio"
+                            <Radio
                               name="mainPhoto"
                               checked={mainId === photo.id}
                               onChange={() => setMainId(photo.id)}
-                            />{" "}
+                            />
                             {mainId === photo.id
                               ? "Главное фото"
                               : "Сделать главным"}
                           </label>
-                          <button
-                            type="button"
-                            disabled={processing}
-                            onClick={() => removePhoto(photo.id)}
-                            aria-label={`Удалить фото ${photo.file.name}`}
-                          >
-                            Удалить
-                          </button>
                         </div>
                       </article>
                     ))}
@@ -639,10 +686,6 @@ export default function CreateStation() {
                         <dd>{draft.antennas.length}</dd>
                       </div>
                     </dl>
-                    <p>
-                      Станция сохранится только в этом браузере. Публикация в
-                      сеть пока не подключена.
-                    </p>
                   </div>
                 </>
               )}
