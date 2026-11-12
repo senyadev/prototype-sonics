@@ -16,6 +16,7 @@ const StationGlobe = lazy(() => import("./StationGlobe"));
 
 const DesignSystem = lazy(() => import("./DesignSystem"));
 const CreateStation = lazy(() => import("./CreateStation"));
+const Planner = lazy(() => import("./Planner"));
 
 function App() {
   const [theme, setTheme] = useState<"light" | "dark">(() =>
@@ -114,6 +115,7 @@ function App() {
       <footer className="home-footer">
         <span>СОНИКС</span>
         <a href={publicPath("/stations/new/")}>Создать станцию</a>
+        <a href={publicPath("/planner/")}>Планировщик наблюдений</a>
         <a href={publicPath("/design-system/")}>Дизайн-система</a>
       </footer>
     </div>
@@ -127,6 +129,8 @@ createRoot(document.getElementById("root")!).render(
         <DesignSystem />
       ) : currentRoute() === "/stations/new" ? (
         <CreateStation />
+      ) : currentRoute() === "/planner" ? (
+        <Planner />
       ) : (
         <App />
       )}
