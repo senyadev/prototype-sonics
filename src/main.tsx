@@ -116,6 +116,7 @@ function App() {
         <span>СОНИКС</span>
         <a href={publicPath("/stations/new/")}>Создать станцию</a>
         <a href={publicPath("/planner/")}>Планировщик наблюдений</a>
+        <a href={publicPath("/planner/results/")}>Расчёт наблюдений</a>
         <a href={publicPath("/design-system/")}>Дизайн-система</a>
       </footer>
     </div>
@@ -131,6 +132,8 @@ createRoot(document.getElementById("root")!).render(
         <CreateStation />
       ) : currentRoute() === "/planner" ? (
         <Planner />
+      ) : currentRoute() === "/planner/results" ? (
+        <Planner mock />
       ) : (
         <App />
       )}

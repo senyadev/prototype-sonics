@@ -4,16 +4,18 @@
 }
 .planner-main {
   max-width: 1406px;
+  box-sizing: content-box;
   margin: 0 auto;
-  padding: 40px 28px 140px;
+  padding: 42px 28px 140px;
 }
+/* Heading/h3 из макета: 28px, semibold, 1.1 */
 .planner-main h1,
 .planner-success h1 {
-  font-size: 24px;
-  line-height: 1.25;
-  font-weight: 500;
-  letter-spacing: -0.5px;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 600;
   margin: 0;
+  color: var(--text-secondary-active);
 }
 .planner-main h1:focus,
 .planner-success h1:focus {
@@ -27,7 +29,7 @@
 .planner-title-row {
   display: flex;
   align-items: center;
-  gap: 16px 24px;
+  gap: 16px;
   flex-wrap: wrap;
   margin-bottom: 24px;
 }
@@ -36,26 +38,36 @@
 }
 .planner-tabs {
   display: flex;
-  gap: 8px;
+  gap: 24px;
+  flex: 1;
+}
+.planner-tabs [aria-disabled="true"] {
+  cursor: default;
 }
 .planner-auto {
-  margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 13px;
+  font-size: 16px;
+  font-weight: 500;
   color: var(--text-secondary-default);
   cursor: pointer;
 }
+.planner-title-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-left: auto;
+}
 
-/* Карточки формы */
+/* Карточки формы: 400 / гибкая / 400, зазор 4px */
 .planner-cards {
   display: grid;
-  grid-template-columns: 1fr 1.5fr 1fr;
-  gap: 8px;
+  grid-template-columns: 400px minmax(0, 1fr) 400px;
+  gap: 4px;
 }
 .planner-card {
-  background: var(--surface-bg-2);
+  background: var(--selectors-bg);
   border-radius: 16px;
   padding: 24px;
   min-width: 0;
@@ -63,59 +75,73 @@
 .planner-card h2 {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: 500;
-  margin: 0 0 12px;
+  gap: 12px;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-secondary-active);
 }
 .planner-card h2 svg {
   fill: var(--text-action-default);
   flex-shrink: 0;
 }
-.planner-card h2 + * + h2 {
-  margin-top: 24px;
+.planner-card-station {
+  display: grid;
+  gap: 24px;
+}
+.planner-block {
+  display: grid;
+  gap: 12px;
+}
+/* Заголовок сверху, поля прижаты к низу карточки */
+.planner-card-split {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
 }
 .planner-card-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-.planner-card-head h2 {
-  margin: 0;
 }
 .planner-period {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 20px;
 }
-.planner-period input,
+.planner-period > * {
+  min-width: 0;
+  width: 100%;
+}
 .planner-filter-grid input {
   width: 100%;
 }
 .picker-trigger {
   display: block;
   width: 100%;
-  min-height: 47px;
-  padding: 0 14px;
+  padding: 14px;
   text-align: left;
   font: inherit;
-  font-size: 14px;
-  color: inherit;
-  background: var(--selectors-bg);
-  border: 1px solid var(--selectors-stroke-default);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text-secondary-active);
+  background: var(--input-search-bg);
+  border: 1px solid var(--input-surface-stroke-default);
   border-radius: 12px;
   cursor: pointer;
+}
+.picker-trigger span {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.picker-trigger span {
-  color: var(--text-secondary-default);
-}
-.picker-trigger:hover {
+.picker-trigger:hover:not(:disabled) {
   border-color: var(--selectors-stroke-active);
 }
 .picker-trigger:focus-visible {
@@ -127,18 +153,56 @@
 .picker-filters > div {
   width: 100%;
 }
+/* Пустой DatePicker: вместо даты подсказка «Выберите время». */
+.date-empty button > span {
+  font-size: 0;
+}
+.date-empty button > span::after {
+  content: "Выберите время";
+  font-size: 16px;
+  color: var(--inputs-search-text-default, var(--text-secondary-default));
+}
+/* Загрузка спутников: вся карточка — один большой лоадер по центру (Figma 8083:112575). */
+.planner-card-split.is-loading {
+  justify-content: center;
+  align-items: center;
+}
+.sat-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+  min-height: 112px;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
 .is-disabled {
   opacity: 0.5;
   pointer-events: none;
 }
 .planner-filters {
-  margin-top: 8px;
+  margin-top: 16px;
+  display: grid;
+  gap: 24px;
+}
+.planner-card.planner-filters h2 {
+  font-size: 24px;
 }
 .planner-filter-grid {
   display: grid;
-  grid-template-columns: 1.3fr 1.3fr 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 284px 284px;
   gap: 24px;
-  align-items: start;
+  align-items: end;
 }
 .range-field {
   border: 0;
@@ -146,10 +210,12 @@
   margin: 0;
   min-width: 0;
 }
-.range-field legend {
-  font-size: 13px;
+.range-field legend,
+.planner-filter-grid label {
+  font-size: 16px;
+  font-weight: 500;
   padding: 0;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 .range-inputs {
   display: grid;
@@ -157,17 +223,44 @@
   gap: 8px;
   margin-top: 14px;
 }
+/* В строку: 92px — слайдер — 92px */
+.range-field-inline .range-inputs {
+  grid-template-columns: 100px minmax(0, 1fr) 100px;
+  align-items: center;
+  margin-top: 0;
+}
+/* MergeSlider из кита: у обёртки фиксированная ширина 169px, а круглые ручки
+   по 20px выходят за края рельса. Растягиваем на колонку и оставляем место под ручки. */
+.range-slider {
+  min-width: 0;
+  padding-inline: 10px;
+}
+.range-slider > div {
+  width: 100%;
+}
+.range-slider .rc-slider {
+  height: 24px;
+  cursor: pointer;
+}
+.range-slider .rc-slider-handle:focus-visible::before {
+  outline: 2px solid var(--buttons-primary-bg);
+  outline-offset: 2px;
+}
 .input-unit {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-secondary-default);
   white-space: nowrap;
 }
 .planner-calc {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin: 24px 0 32px;
+  justify-content: center;
+  margin: 16px 0 24px;
+}
+/* У основной кнопки дизайн-системы нет стиля disabled — в макете она бледная. */
+.planner-calc button:disabled,
+.picker-footer button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Результаты */
@@ -183,6 +276,11 @@
   font-size: 13px;
   color: var(--text-secondary-default);
 }
+.results {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
 .results-head {
   display: flex;
   align-items: center;
@@ -193,75 +291,146 @@
 .results-station {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  min-width: 0;
 }
-.results-station-icon,
-.sat-icon {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: var(--surface-accent);
+.results-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  flex: none;
+  overflow: hidden;
 }
-.results-station-icon svg,
-.sat-icon svg {
-  fill: var(--text-action-default);
+.results-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .results-station small {
   display: block;
-  font-size: 12px;
-  color: var(--text-secondary-default);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--body-secondary);
+}
+.results-station-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 .results-station strong {
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--body-primary);
+}
+.results-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.results-group-btn {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 128px;
+  background: transparent;
+  color: var(--body-secondary);
+  cursor: pointer;
+}
+.results-group-btn:hover {
+  background: var(--states-monochrome-hover);
+}
+.results-group-btn.is-active {
+  background: var(--states-monochrome-active);
+}
+.results-group-btn:focus-visible {
+  outline: 2px solid var(--buttons-primary-bg);
+  outline-offset: 2px;
 }
 .results-summary {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
   gap: 4px 12px;
-  margin: 16px 0;
-  font-size: 13px;
-  color: var(--text-secondary-default);
+  margin: -4px 0 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--body-primary);
 }
 .results-summary strong {
-  font-size: 15px;
   font-weight: 500;
-  color: var(--text-secondary-active);
+  color: var(--body-secondary);
 }
 .sat-group {
   background: var(--surface-bg-2);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 12px;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
-  margin-bottom: 16px;
 }
 .sat-group > header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 4px 4px 4px;
-  font-size: 13px;
-  color: var(--text-secondary-default);
-}
-.sat-group > header strong {
-  font-weight: 500;
-  color: var(--text-secondary-active);
+  gap: 8px;
+  padding: 0 24px 12px 0;
 }
 .sat-group > header > div {
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
 .sat-icon {
-  width: 36px;
-  height: 36px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--surface-bg-3);
+  flex: none;
+}
+.sat-icon svg {
+  fill: var(--text-action-default);
+}
+.sat-name {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--body-secondary);
+}
+.sat-name span {
+  color: var(--text-secondary-default);
+}
+.sat-quality {
+  display: flex;
+  width: 137px;
+  height: 8px;
+}
+.sat-quality span {
+  flex-basis: 0;
+}
+.sat-quality .good {
+  background: var(--chart-green-high);
+}
+.sat-quality .partial {
+  background: var(--chart-orange-high);
+}
+.sat-quality .bad {
+  background: var(--chart-red-high);
+}
+.sat-quality .empty {
+  background: var(--chart-gray-empty);
 }
 .sat-count {
   margin-left: auto;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--body-primary);
 }
 .success-bar {
   display: block;
@@ -281,9 +450,9 @@
   align-items: center;
   gap: 12px;
   padding: 8px 4px 0;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--text-secondary-default);
+  color: var(--body-primary);
 }
 .day-divider::after {
   content: "";
@@ -292,56 +461,63 @@
   background: var(--surface-stroke);
 }
 
+/* Карточка наблюдения */
 .pass-card {
-  background: var(--surface-bg-1);
-  border: 1px solid transparent;
+  padding: 4px;
   border-radius: 12px;
-  overflow: hidden;
-}
-.pass-card.added {
-  border-color: var(--surface-accent-stroke);
+  outline: 1px solid transparent;
+  outline-offset: -1px;
 }
 .pass-card.truncated {
-  border-color: var(--badge-colors-red-stroke);
+  background: var(--states-action-active);
+}
+.pass-card.added {
+  outline-color: var(--surface-stroke);
 }
 .pass-warning {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
-  padding: 10px 16px;
-  font-size: 12px;
+  padding: 6px 18px 8px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
   color: var(--text-action-default);
-  background: var(--surface-accent);
+}
+.pass-body {
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-bg-1);
 }
 .pass-main {
   display: grid;
-  grid-template-columns: 88px auto 1fr auto;
+  grid-template-columns: 150px auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 24px;
-  padding: 16px 20px;
+  gap: 20px;
+  padding: 24px;
 }
 .polar-plot {
-  width: 88px;
-  height: 88px;
+  width: 150px;
+  height: 150px;
   overflow: visible;
 }
 .polar-grid circle,
 .polar-grid line {
   fill: none;
   stroke: var(--text-secondary-default);
-  stroke-width: 0.6;
+  stroke-width: 0.5;
   opacity: 0.6;
 }
 .polar-labels text {
-  font-size: 7px;
+  font-size: 6px;
   text-anchor: middle;
   fill: var(--text-secondary-default);
 }
 .polar-path {
   fill: none;
   stroke: var(--chart-blue-high);
-  stroke-width: 1.6;
+  stroke-width: 1.2;
 }
 .polar-aos {
   fill: var(--chart-green-high);
@@ -356,18 +532,34 @@
   margin: 0;
 }
 .pass-angles {
-  padding-right: 24px;
-  border-right: 1px solid var(--surface-stroke);
+  padding: 0 24px;
 }
 .pass-times {
-  flex-wrap: wrap;
-  gap: 12px 32px;
+  align-self: stretch;
+  align-items: center;
+  padding-left: 24px;
+  border-left: 1px solid var(--surface-stroke);
+}
+.pass-times > div {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.pass-angles > div {
+  min-width: 64px;
+}
+.pass-angles > div,
+.pass-times > div {
+  display: grid;
+  gap: 8px;
+  padding: 4px;
 }
 .pass-angles dt,
 .pass-times dt {
-  font-size: 12px;
-  color: var(--text-secondary-default);
-  margin-bottom: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--body-primary);
+  white-space: nowrap;
 }
 .pass-angles dt.aos {
   color: var(--chart-green-high);
@@ -378,92 +570,414 @@
 .pass-angles dd,
 .pass-times dd {
   margin: 0;
-  font-size: 18px;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--body-secondary);
   font-variant-numeric: tabular-nums;
 }
 .pass-times dd {
-  font-size: 16px;
+  font-size: 20px;
 }
 .pass-intersection {
-  margin: 0 20px;
-  padding: 14px 0 16px;
-  border-top: 1px solid var(--surface-stroke);
+  display: grid;
+  gap: 10px;
+  padding: 0 18px 12px;
 }
 .intersection-head {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px 16px;
-  font-size: 12px;
-  margin-bottom: 10px;
+  gap: 8px 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--surface-stroke);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
 }
-.intersection-head svg {
+.intersection-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--body-secondary);
+}
+.intersection-title svg {
   color: var(--chart-red-high);
 }
 .intersection-range {
-  color: var(--text-secondary-default);
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding-right: 12px;
+  border-right: 1px solid var(--surface-stroke);
+  color: var(--body-primary);
   font-variant-numeric: tabular-nums;
 }
 .intersection-length {
-  padding: 2px 8px;
-  border-radius: 6px;
+  padding: 4px 8px;
+  border-radius: 64px;
   background: var(--surface-bg-3);
+  color: var(--body-secondary);
 }
 .intersection-cancel {
   margin-left: auto;
 }
 .intersection-track {
   position: relative;
-  height: 12px;
-  border: 1px solid var(--surface-stroke);
-  border-radius: 3px;
+  height: 20px;
+  border: 1px solid var(--chart-gray-empty);
   background: var(--surface-bg-2);
 }
 .intersection-track span {
   position: absolute;
   top: 0;
   bottom: 0;
-  background: var(--badge-colors-red-surface);
-  border-left: 1px solid var(--chart-red-high);
-  border-right: 1px solid var(--chart-red-high);
+  background: var(--surface-stroke);
 }
 .intersection-scale {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
-  font-size: 11px;
-  color: var(--text-secondary-default);
+  position: relative;
+  height: 19px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--body-primary);
+  font-variant-numeric: tabular-nums;
+}
+.intersection-scale span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.intersection-scale span:first-child[style*="left: 0%"] {
+  transform: none;
+}
+.intersection-scale span:last-child[style*="left: 100%"] {
+  transform: translateX(-100%);
 }
 
-/* Островок действий */
-.planner-island {
-  position: fixed;
-  left: 50%;
-  bottom: 24px;
+/* Вид графиком */
+.pass-chart {
+  display: grid;
+  gap: 12px;
+  padding: 24px;
+  border-radius: 12px;
+  background: var(--surface-bg-2);
+  --label: 140px;
+}
+.pass-chart-axis {
+  position: relative;
+  height: 17px;
+  margin-left: calc(var(--label) + 12px);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--body-primary);
+}
+.pass-chart-axis span {
+  position: absolute;
   transform: translateX(-50%);
-  z-index: 20;
+  white-space: nowrap;
+}
+.pass-chart-axis span:first-child {
+  transform: none;
+}
+.pass-chart-axis span:last-child {
+  transform: translateX(-100%);
+}
+.pass-chart-row {
+  display: grid;
+  grid-template-columns: var(--label) minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+.pass-chart-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--body-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pass-chart-lane {
+  position: relative;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--surface-bg-1);
+}
+.pass-chart-grid {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--surface-stroke);
+}
+/* Полоса пролёта: позицию держит обёртка .pass-chart-item, в ней же всплывашка. */
+.pass-chart-item {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  min-width: 6px;
+}
+.pass-chart-item:hover,
+.pass-chart-item:focus-within {
+  z-index: 3;
+}
+.pass-chart-bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: var(--chart-green-high);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.pass-chart-bar.truncated {
+  background: var(--chart-orange-high);
+}
+.pass-chart-bar.added {
+  background: var(--body-secondary);
+}
+.pass-chart-item:hover .pass-chart-bar {
+  background: var(--chart-green-medium);
+}
+.pass-chart-item:hover .pass-chart-bar.truncated {
+  background: var(--chart-orange-medium);
+}
+.pass-chart-item:hover .pass-chart-bar.added {
+  background: var(--text-secondary-default);
+}
+.pass-chart-bar:focus-visible {
+  outline: 2px solid var(--buttons-primary-bg);
+  outline-offset: 2px;
+}
+
+/* Всплывашка над полосой (макет 8985:84004) */
+.pass-chart-pop {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--surface-stroke);
+  border-radius: 16px;
+  background: var(--surface-bg-2);
+  box-shadow: 0 10px 24px -12px var(--shadow-overlay-color);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+}
+.pass-chart-item.is-start .pass-chart-pop {
+  left: 0;
+  transform: translate(0, 4px);
+}
+.pass-chart-item.is-end .pass-chart-pop {
+  left: auto;
+  right: 0;
+  transform: translate(0, 4px);
+}
+.pass-chart-item:hover .pass-chart-pop,
+.pass-chart-item:focus-within .pass-chart-pop {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+.pass-chart-item.is-start:hover .pass-chart-pop,
+.pass-chart-item.is-start:focus-within .pass-chart-pop,
+.pass-chart-item.is-end:hover .pass-chart-pop,
+.pass-chart-item.is-end:focus-within .pass-chart-pop {
+  transform: none;
+}
+.pass-chart-pop-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pass-chart-pop .polar-plot {
+  width: 90px;
+  height: 90px;
+}
+.pass-chart-pop-info {
+  display: grid;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.pass-chart-pop-duration {
+  color: var(--body-primary);
+}
+.pass-chart-pop-angles {
+  display: flex;
+  gap: 10px;
+  color: var(--body-secondary);
+}
+.pass-chart-pop-angles b {
+  font-weight: 500;
+}
+.pass-chart-pop-angles .aos {
+  color: var(--chart-green-high);
+}
+.pass-chart-pop-angles .tca {
+  color: var(--text-secondary-default);
+}
+.pass-chart-pop-angles .los {
+  color: var(--chart-red-high);
+}
+.pass-chart-pop-intersection {
+  gap: 16px;
+  width: 250px;
+  white-space: normal;
+}
+.pass-chart-pop-cross {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--body-secondary);
+}
+.pass-chart-pop-cross svg {
+  color: var(--chart-red-high);
+}
+.pass-chart-pop-chip {
+  padding: 4px 8px;
+  border-radius: 64px;
+  background: var(--surface-bg-3);
+}
+.pass-chart-pop-hint {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--body-primary);
+  text-align: center;
+}
+.pass-chart-pop-intersection .pass-chart-pop-hint {
+  text-align: left;
+}
+@media (hover: none) {
+  .pass-chart-pop {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pass-chart-pop {
+    transition: none;
+  }
+}
+.pass-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 4px 0 0 calc(var(--label) + 12px);
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--body-primary);
+}
+.pass-chart-legend li {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 8px 8px 16px;
+}
+.pass-chart-legend .pass-chart-bar {
+  display: inline-block;
+  width: 16px;
+  height: 8px;
+  cursor: default;
+}
+
+/* Островок действий */
+/* Островки по макету 8332:86126: зелёный «Запланировать» и белый с «Посмотреть план» / «Отменить». */
+.planner-islands {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 24px;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  /* Пустое место между островками не перекрывает страницу. */
+  pointer-events: none;
+  animation: island-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.planner-island {
+  pointer-events: auto;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
   border-radius: 16px;
   background: var(--modal-bg);
-  border: 1px solid var(--surface-stroke);
-  box-shadow: 0 8px 32px var(--shadow-overlay-color);
+  box-shadow: 0 10px 24px -12px var(--shadow-overlay-color);
 }
-.planner-island-count {
-  font-size: 13px;
-  margin-right: 8px;
-  white-space: nowrap;
+.planner-island-accent {
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 24px -12px rgba(25, 194, 115, 0.24);
+  animation: island-pulse 2.4s ease-in-out 0.6s infinite;
+}
+/* Мягкая пульсация зелёной тени: привлекает к «Запланировать», не мигая. */
+@keyframes island-pulse {
+  0%,
+  100% {
+    box-shadow: 0 10px 24px -12px rgba(25, 194, 115, 0.24);
+  }
+  50% {
+    box-shadow: 0 12px 28px -8px rgba(25, 194, 115, 0.5);
+  }
+}
+.planner-island .planner-island-btn {
+  /* У primary-кнопки кита внутренняя обводка цвета --buttons-primary-stroke (светло-оранжевая) — перекрашиваем в зелёный. */
+  --buttons-primary-stroke: var(--chart-green-high);
+  background: var(--chart-green-high);
+  color: #fff;
+}
+@keyframes island-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .planner-islands,
+  .planner-island-accent {
+    animation: none;
+  }
 }
 
 /* Модалки выбора */
+/* Двойной скролл: модалка фиксированной высоты, фильтры и список прокручиваются отдельно,
+   поиск остаётся над списком. Контент Modal из кита сам скроллится — отключаем это. */
 .picker-modal {
   width: min(960px, calc(100vw - 32px));
+  height: min(866px, calc(100dvh - 32px));
+  max-height: none;
+}
+.picker-modal > [class*="_content_"] {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
 }
 .picker-layout {
+  flex: 1;
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 240px minmax(0, 1fr);
   min-height: 0;
 }
 .picker-filters {
@@ -472,21 +986,32 @@
   gap: 20px;
   padding: 16px;
   border-right: 1px solid var(--surface-stroke);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .picker-results {
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 12px;
-  align-content: start;
-  padding: 16px;
+  padding: 16px 0 0;
   background: var(--surface-bg-1);
   min-width: 0;
+  min-height: 0;
+}
+.picker-results > :first-child {
+  margin-inline: 16px;
 }
 .picker-list {
   display: grid;
+  align-content: start;
   gap: 8px;
-  max-height: min(56vh, 520px);
-  overflow: auto;
-  padding: 2px;
+  grid-auto-rows: max-content;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 16px 16px; /* место под кольцо выбранной карточки */
 }
 .picker-empty {
   font-size: 13px;
@@ -503,8 +1028,12 @@
   background: var(--surface-bg-2);
   cursor: pointer;
 }
+/* Выбранная карточка: голубая обводка и мягкое кольцо тенью, как в макете. */
 .picker-card.selected {
-  border-color: var(--checkbox-active-stroke);
+  border-radius: var(--radius-16, 16px);
+  border-color: var(--selectors-stroke-active);
+  background: var(--surface-bg-2);
+  box-shadow: 0 0 0 4px rgba(114, 188, 255, 0.24);
 }
 .picker-card.dimmed {
   opacity: 0.6;
@@ -558,6 +1087,188 @@
   width: 100%;
   margin-top: 6px;
 }
+/* Карточка станции по макету: аватарки, номер, иконки антенн, полоса качества. */
+.station-card {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  padding: 0;
+  border-radius: 16px;
+  border: 1px solid var(--surface-stroke);
+  overflow: hidden;
+}
+.station-card.selected {
+  border-color: var(--checkbox-active-stroke);
+}
+.station-card .picker-card-head {
+  gap: 8px;
+  padding: 12px 12px 0;
+}
+.station-card-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 8px;
+}
+.station-card-title > :first-child {
+  flex: none;
+  border-radius: 8px;
+}
+.station-card-title strong {
+  min-width: 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--body-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* BaseBadge SMALL из кита ниже макета (23px против 27px): добавляем вертикальный отступ. */
+.station-card-number {
+  flex: none;
+  padding-block: 4px;
+  line-height: 1.2;
+}
+.station-card .picker-card-status {
+  margin-left: 0;
+  flex: none;
+}
+.station-card .picker-card-sub {
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px 12px 12px;
+  border-bottom: 1px solid var(--surface-stroke);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.station-card-owner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text-secondary-default);
+}
+.station-card-owner img {
+  flex: none;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.station-card-antennas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--body-secondary);
+}
+.station-card-antennas li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+}
+.station-card-antennas svg {
+  color: var(--body-primary);
+  flex: none;
+}
+.station-card .picker-card-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(150px, 1.3fr);
+  gap: 24px;
+  padding: 16px 12px;
+  border-top: 0;
+}
+.station-card .picker-card-stats > div {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.station-card .picker-card-stats dt,
+.station-card .picker-card-stats dd {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.station-card .picker-card-stats dt {
+  color: var(--body-primary);
+}
+.station-card .picker-card-stats dd {
+  color: var(--body-secondary);
+}
+.station-card .station-card-success {
+  gap: 16px;
+}
+.station-card .station-card-success dt {
+  gap: 8px;
+  overflow: visible;
+}
+.station-card-antennas {
+  min-width: 0;
+}
+/* Карточка спутника: флаг, партнёры, бейджи передатчика и орбиты. */
+.sat-card .picker-card-head {
+  padding-bottom: 0;
+}
+.sat-card-flag {
+  flex: none;
+}
+/* Название не сжимаем — при нехватке места обрезаются партнёры. */
+.sat-card .station-card-title strong {
+  flex: none;
+}
+.sat-card-partners {
+  display: flex;
+  gap: 8px;
+  padding-left: 10px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--body-secondary);
+  white-space: nowrap;
+}
+.sat-card-partners > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sat-card-partners svg,
+.sat-card-partners img {
+  flex: none;
+}
+.sat-card-badges {
+  display: flex;
+  gap: 10px;
+  flex: none;
+}
+.picker-modal.picker-modal-sat {
+  width: min(1024px, calc(100vw - 32px));
+}
+.picker-modal-sat .picker-layout {
+  grid-template-columns: 297px minmax(0, 1fr);
+}
+
+.quality-bar {
+  display: flex;
+  width: 100%;
+  height: 8px;
+}
+.quality-bar span {
+  flex-basis: 0;
+}
+.quality-bar .blue { background: var(--chart-blue-high); }
+.quality-bar .green { background: var(--chart-green-high); }
+.quality-bar .orange { background: var(--chart-orange-high); }
+.quality-bar .red { background: var(--chart-red-high); }
+.quality-bar .gray { background: var(--chart-gray-empty); }
+
 .picker-footer {
   display: flex;
   justify-content: flex-end;
@@ -658,34 +1369,57 @@
   margin-top: 8px;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1360px) {
   .planner-cards {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
   .planner-cards > :nth-child(2) {
     grid-column: 1 / -1;
     order: 3;
   }
   .planner-filter-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
+}
+@media (max-width: 1100px) {
   .pass-main {
-    grid-template-columns: 88px 1fr auto;
+    grid-template-columns: 120px 1fr auto;
+  }
+  .polar-plot {
+    width: 120px;
+    height: 120px;
   }
   .pass-times {
     grid-column: 1 / -1;
     grid-row: 2;
+    padding: 16px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--surface-stroke);
   }
 }
 
 @media (max-width: 720px) {
+  /* Слайдер над полями во всю ширину, как в мобильной раскладке Slider из кита. */
+  .range-field-inline .range-inputs {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 8px;
+  }
+  .range-field-inline .range-slider {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
   .planner-main {
     padding: 24px 16px 160px;
   }
   .planner-main h1 {
-    font-size: 21px;
+    font-size: 24px;
   }
-  .planner-auto {
+  .planner-tabs {
+    flex-basis: 100%;
+    order: 3;
+  }
+  .planner-title-actions {
+    order: 4;
     margin-left: 0;
   }
   .planner-cards,
@@ -701,31 +1435,49 @@
     padding: 16px;
   }
   .pass-main {
-    grid-template-columns: 72px 1fr;
+    grid-template-columns: 88px 1fr;
     gap: 16px;
-    padding: 14px;
+    padding: 16px;
   }
   .polar-plot {
-    width: 72px;
-    height: 72px;
+    width: 88px;
+    height: 88px;
   }
   .pass-angles {
-    border-right: 0;
-    padding-right: 0;
-    gap: 16px;
+    padding: 0;
+    gap: 12px;
+  }
+  .pass-angles > div,
+  .pass-times > div {
+    padding: 0;
   }
   .pass-angles dd {
-    font-size: 16px;
+    font-size: 18px;
   }
   .pass-times {
+    flex-wrap: wrap;
     gap: 12px 20px;
+  }
+  .pass-times > div {
+    flex: 1 1 40%;
+  }
+  .pass-times dd {
+    font-size: 16px;
   }
   .pass-action {
     grid-column: 1 / -1;
     width: 100%;
   }
+  .pass-warning {
+    padding: 6px 12px 8px;
+    font-size: 14px;
+  }
   .pass-intersection {
-    margin: 0 14px;
+    padding: 0 16px 12px;
+  }
+  .intersection-range {
+    border-right: 0;
+    padding-right: 0;
   }
   .intersection-cancel {
     margin-left: 0;
@@ -733,19 +1485,22 @@
   .sat-group {
     padding: 8px;
   }
-  .planner-island {
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
-    transform: none;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 10px;
+  .sat-group > header {
+    padding: 4px 4px 8px;
   }
-  .planner-island-count {
-    width: 100%;
-    text-align: center;
-    margin: 0;
+  .results-station strong {
+    font-size: 20px;
+  }
+  .pass-chart {
+    padding: 16px;
+    --label: 88px;
+  }
+  .pass-chart-label {
+    font-size: 14px;
+  }
+  .planner-islands {
+    bottom: 16px;
+    gap: 8px;
   }
   .picker-layout {
     grid-template-columns: 1fr;
@@ -757,11 +1512,433 @@
   .picker-card-stats {
     grid-template-columns: 1fr 1fr;
   }
+  .station-card-title {
+    padding-left: 0;
+  }
+  .station-card-title strong {
+    font-size: 18px;
+  }
+  .station-card .picker-card-stats {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+  }
+  .station-card .picker-card-stats dt,
+  .station-card .picker-card-stats dd {
+    font-size: 14px;
+  }
+  .sat-card-partners {
+    display: none;
+  }
+  .sat-card .station-card-title strong {
+    flex: 0 1 auto;
+  }
+  .sat-card-badges {
+    margin-left: 28px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .picker-modal-sat .picker-layout {
+    grid-template-columns: 1fr;
+  }
+  /* Статус переносим под название, чтобы длинным названиям хватало места. */
+  .station-card .picker-card-head {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  .station-card-title {
+    flex-basis: calc(100% - 28px);
+  }
+  .station-card .picker-card-status {
+    margin-left: 28px;
+  }
+  /* На телефоне колонки друг под другом — один общий скролл. */
+  .picker-modal > [class*="_content_"] {
+    display: block;
+    overflow-y: auto;
+  }
+  .picker-filters,
   .picker-list {
-    max-height: none;
+    overflow: visible;
   }
   .planner-success-actions {
     flex-direction: column;
     width: 100%;
   }
+}
+
+/* Дата расчёта над списком (вместо даты в каждой карточке). */
+/* Заголовок дня: дата и линия до края, над группами спутников этого дня. */
+.pass-day {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--heading-primary);
+}
+.pass-day button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.pass-day button:focus-visible {
+  outline: 2px solid var(--text-action-default);
+  outline-offset: 2px;
+}
+.pass-day small {
+  margin-left: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary-default);
+}
+.pass-day-chevron {
+  fill: currentColor;
+  transition: transform 0.15s ease;
+}
+.pass-day button[aria-expanded="false"] .pass-day-chevron {
+  transform: rotate(-90deg);
+}
+.pass-day::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--surface-stroke);
+}
+.pass-next-day {
+  font-size: 14px;
+  color: var(--text-secondary-default);
+}
+
+/* ---------- Автонаблюдения ---------- */
+.planner-cards.planner-cards-auto {
+  grid-template-columns: 400px minmax(0, 1fr);
+}
+.planner-cards-auto > .auto-sats {
+  grid-column: 1 / -1;
+}
+.planner-cards-auto > .planner-calc {
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 16px;
+}
+.auto-params {
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+.auto-params-body {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+.auto-params-grid {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px 24px;
+}
+.auto-params-grid input {
+  width: 100%;
+}
+.azimuth-sector {
+  flex: none;
+  width: 128px;
+  height: 128px;
+}
+.azimuth-ring {
+  fill: none;
+  stroke: var(--text-secondary-default);
+  stroke-width: 0.6;
+  opacity: 0.6;
+}
+.azimuth-fill {
+  fill: var(--text-action-default);
+  fill-opacity: 0.18;
+  stroke: var(--text-action-default);
+  stroke-width: 1;
+}
+.azimuth-labels text {
+  font-size: 7px;
+  text-anchor: middle;
+  fill: var(--text-secondary-default);
+}
+.auto-sats {
+  display: grid;
+  gap: 16px;
+  margin-top: 4px;
+}
+.auto-sats .planner-card-head {
+  justify-content: flex-start;
+}
+.auto-hint {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary-default);
+}
+.auto-table {
+  display: grid;
+}
+.auto-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) minmax(200px, 1.5fr) 120px auto;
+  gap: 16px;
+  align-items: start;
+  padding: 12px 0;
+  border-top: 1px solid var(--surface-stroke);
+}
+.auto-row-head {
+  padding: 0 0 8px;
+  border-top: 0;
+  font-size: 12px;
+  color: var(--text-secondary-default);
+}
+.auto-sat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+}
+.auto-sat strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+}
+.auto-sat small {
+  font-size: 12px;
+  color: var(--text-secondary-default);
+}
+.auto-priority input {
+  width: 100%;
+}
+.auto-remove {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+}
+.picker-card.is-locked {
+  opacity: 0.5;
+}
+.auto-payload {
+  width: min(560px, 100%);
+  text-align: left;
+  font-size: 14px;
+  color: var(--text-secondary-default);
+}
+.auto-payload summary {
+  cursor: pointer;
+  text-align: center;
+}
+.auto-payload pre {
+  margin: 12px 0 0;
+  padding: 16px;
+  max-height: 320px;
+  overflow: auto;
+  border-radius: 12px;
+  background: var(--selectors-bg);
+  color: var(--heading-primary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+@media (max-width: 1360px) {
+  .planner-cards.planner-cards-auto {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .planner-cards-auto > :nth-child(2) {
+    order: 0;
+  }
+}
+@media (max-width: 720px) {
+  .auto-params-body {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+  .auto-params-body .auto-params-grid {
+    width: 100%;
+  }
+  .auto-row-head {
+    display: none;
+  }
+  .auto-row {
+    grid-template-columns: minmax(0, 1fr) 96px;
+  }
+  .auto-tx {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+  .auto-remove {
+    grid-column: 1 / -1;
+    order: 4;
+    min-height: 0;
+  }
+}
+.auto-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.auto-field > small {
+  font-size: 12px;
+  color: var(--text-secondary-default);
+}
+.auto-field.has-error > small {
+  color: var(--input-text-error);
+}
+.auto-tx > * {
+  width: 100%;
+}
+.auto-sats-actions {
+  display: flex;
+  padding-top: 16px;
+  border-top: 1px solid var(--surface-stroke);
+}
+
+/* Параметры расчёта и кнопка — одной строкой; элевация и наложение — компактная панель в результатах. */
+.planner-calc-bar {
+  margin: 16px 0 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px 24px;
+  align-items: end;
+}
+.planner-card.planner-calc-bar h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.planner-calc-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 240px));
+  gap: 24px;
+}
+.planner-calc-fields input {
+  width: 100%;
+}
+.planner-calc-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.results-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px 40px;
+  margin: 8px 0;
+}
+.results-filter {
+  display: grid;
+  gap: 12px;
+  width: 460px;
+  max-width: 100%;
+}
+.results-filter .range-field legend {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.range-field-compact {
+  display: grid;
+  gap: 4px;
+}
+.range-field-compact legend {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.range-field-compact output {
+  font-weight: 400;
+  color: var(--text-secondary-default);
+  font-variant-numeric: tabular-nums;
+}
+.results-filter-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary-default);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.results-filters-reset {
+  align-self: center;
+  margin-left: auto;
+}
+.results-hidden {
+  margin-left: 12px;
+  color: var(--text-secondary-default);
+}
+@media (max-width: 720px) {
+  .planner-calc-bar,
+  .planner-calc-fields {
+    grid-template-columns: 1fr;
+  }
+  .results-filter {
+    width: 100%;
+  }
+  .results-filter-check {
+    white-space: normal;
+  }
+  .results-filters-reset {
+    margin-left: 0;
+  }
+}
+/* У thinking-orbs максимум 64px; растягиваем холст крупнее. */
+canvas.orb-big {
+  width: 96px !important;
+  height: 96px !important;
+}
+
+/* Плавное появление результатов после загрузки: блоки всплывают по очереди. */
+@keyframes results-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.results > * {
+  animation: results-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.results > :nth-child(2) { animation-delay: 120ms; }
+.results > :nth-child(3) { animation-delay: 240ms; }
+.results > :nth-child(4) { animation-delay: 360ms; }
+.results > :nth-child(5) { animation-delay: 480ms; }
+.results > :nth-child(6) { animation-delay: 600ms; }
+.results > :nth-child(7) { animation-delay: 720ms; }
+.results > :nth-child(8) { animation-delay: 840ms; }
+.results > :nth-child(9) { animation-delay: 960ms; }
+.results > :nth-child(n + 10) { animation-delay: 1080ms; }
+.planner-loading {
+  animation: results-in 0.5s ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .results > *,
+  .planner-loading {
+    animation: none;
+  }
+}
+/* «Добавить» и «Убрать» одной ширины, чтобы кнопка не прыгала при переключении. */
+.pass-action {
+  min-width: 128px;
+  justify-content: center;
+}
+/* В «Авто» карточка станции тянется по высоте соседней карточки параметров — поля остаются обычной высоты. */
+.planner-cards-auto .planner-card-station,
+.planner-cards-auto .planner-card-station .planner-block {
+  align-content: start;
 }

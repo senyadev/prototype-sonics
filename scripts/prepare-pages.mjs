@@ -1,7 +1,7 @@
 import { mkdir, copyFile, writeFile } from "node:fs/promises";
 
 // Real route entry points let static hosts serve direct links and refreshes.
-for (const route of ["design-system", "stations/new", "planner"]) {
+for (const route of ["design-system", "stations/new", "planner", "planner/results"]) {
   await mkdir(`dist/${route}`, { recursive: true });
   await copyFile("dist/index.html", `dist/${route}/index.html`);
 }

@@ -21,16 +21,20 @@ export type Satellite = {
   id: string;
   name: string;
   norad: number;
-  operator?: string;
+  /** Страна запуска: код флага из @sonik-space/icons. */
+  country: "RU" | "US";
+  /** Партнёры миссии с логотипами. */
+  partners?: { name: string; logo: "geoscan" | "space-pi" }[];
+  /** Спутник на орбите (иначе сошёл). */
+  onOrbit: boolean;
   transmitters: number;
   observations: number;
   success: number;
   active: boolean;
 };
 
+/** Параметры расчёта. Элевация и наложение фильтруют уже готовый результат — см. ResultFilters. */
 export type Filters = {
-  elevation: [number, number];
-  overlap: [number, number];
   minDuration: number;
   maxDuration: number;
 };
@@ -52,6 +56,8 @@ export type Pass = {
   los: number;
   maxElevation: number;
   intersections: Intersection[];
+  /** Станция пролёта — в режиме «Для спутника», где наблюдения идут на нескольких станциях. */
+  stationId?: number;
 };
 
 export const STATIONS: Station[] = [
@@ -131,20 +137,18 @@ export const STATIONS: Station[] = [
 ];
 
 export const SATELLITES: Satellite[] = [
-  { id: "innosat16", name: "InnoSat16", norad: 57172, operator: "Геоскан", transmitters: 3, observations: 1234, success: 90, active: true },
-  { id: "innosat17", name: "InnoSat17", norad: 57173, operator: "Геоскан", transmitters: 3, observations: 1105, success: 87, active: true },
-  { id: "noaa19", name: "NOAA 19", norad: 33591, transmitters: 4, observations: 8840, success: 94, active: true },
-  { id: "meteor23", name: "Meteor-M 2-3", norad: 57166, transmitters: 2, observations: 2310, success: 83, active: true },
-  { id: "edelveis", name: "Geoscan-Edelveis", norad: 53385, operator: "Геоскан", transmitters: 2, observations: 640, success: 71, active: true },
-  { id: "siriussat", name: "SiriusSat-1", norad: 43595, transmitters: 1, observations: 312, success: 58, active: false },
+  { id: "innosat16", name: "InnoSat16", norad: 57172, country: "RU", partners: [{ name: "Геоскан", logo: "geoscan" }, { name: "Space-π", logo: "space-pi" }], onOrbit: true, transmitters: 3, observations: 1234, success: 90, active: true },
+  { id: "innosat17", name: "InnoSat17", norad: 57173, country: "RU", partners: [{ name: "Геоскан", logo: "geoscan" }, { name: "Space-π", logo: "space-pi" }], onOrbit: true, transmitters: 3, observations: 1105, success: 87, active: true },
+  { id: "noaa19", name: "NOAA 19", norad: 33591, country: "US", onOrbit: true, transmitters: 4, observations: 8840, success: 94, active: true },
+  { id: "meteor23", name: "Meteor-M 2-3", norad: 57166, country: "RU", onOrbit: true, transmitters: 2, observations: 2310, success: 83, active: true },
+  { id: "edelveis", name: "Geoscan-Edelveis", norad: 53385, country: "RU", partners: [{ name: "Геоскан", logo: "geoscan" }], onOrbit: true, transmitters: 2, observations: 640, success: 71, active: true },
+  { id: "siriussat", name: "SiriusSat-1", norad: 43595, country: "RU", onOrbit: false, transmitters: 1, observations: 312, success: 58, active: false },
 ];
 
 export const PERIODS = [1, 3, 6, 12, 24] as const;
 export type Period = (typeof PERIODS)[number];
 
 export const DEFAULT_FILTERS: Filters = {
-  elevation: [0, 90],
-  overlap: [0, 100],
   minDuration: 120,
   maxDuration: 1200,
 };
@@ -161,6 +165,16 @@ function random(seed: string) {
     h = Math.imul(h ^ (h >>> 13), 3266489909);
     return ((h ^= h >>> 16) >>> 0) / 4294967296;
   };
+}
+
+/** Спутники, которые проходят над станцией в выбранный период (моки). */
+export function availableSatellites(station: Station, antenna: Antenna, start: Date, hours: number): string[] {
+  const rnd = random(`${station.id}-${antenna.id}-${+start}-${hours}`);
+  const chance = Math.min(0.9, 0.45 + hours / 40);
+  const list = SATELLITES.filter((s) => s.active && rnd() < chance).map((s) => s.id);
+  // Хотя бы два спутника, чтобы было что выбрать и увидеть пересечения.
+  for (const s of SATELLITES) if (list.length < 2 && s.active && !list.includes(s.id)) list.push(s.id);
+  return SATELLITES.map((s) => s.id).filter((id) => list.includes(id));
 }
 
 const overlapSeconds = (a: Pass, b: Pass) =>
@@ -221,10 +235,7 @@ export function calculatePasses(
   }
   passes = passes.filter(
     (p) =>
-      !cancelled.has(p.id) &&
-      p.maxElevation >= filters.elevation[0] &&
-      p.maxElevation <= filters.elevation[1] &&
-      (+p.end - +p.start) / 1000 >= filters.minDuration,
+      !cancelled.has(p.id) && (+p.end - +p.start) / 1000 >= filters.minDuration,
   );
   // Антенна ведёт один спутник: при наложении усекается пролёт с меньшей высотой.
   for (const a of passes)
@@ -241,16 +252,30 @@ export function calculatePasses(
         to: new Date(Math.min(+a.end, +b.end)),
       });
     }
-  return passes
-    .filter((p) => {
-      const covered = p.intersections.reduce(
-        (sum, i) => sum + (+i.to - +i.from) / 1000,
-        0,
-      );
-      const share = (covered / ((+p.end - +p.start) / 1000)) * 100;
-      return share >= filters.overlap[0] && share <= filters.overlap[1];
-    })
-    .sort((x, y) => +x.start - +y.start);
+  return passes.sort((x, y) => +x.start - +y.start);
+}
+
+/** Доля пролёта (в %), которая перекрыта другими наблюдениями. */
+export function overlapShare(p: Pass) {
+  const covered = p.intersections.reduce((sum, i) => sum + (+i.to - +i.from) / 1000, 0);
+  return (covered / ((+p.end - +p.start) / 1000)) * 100;
+}
+
+/** Фильтры по готовому расчёту: элевация (с учётом горизонта станции) и наложение. */
+export type ResultFilters = {
+  elevation: [number, number];
+  overlap: [number, number];
+  useHorizon: boolean;
+};
+export const DEFAULT_RESULT_FILTERS: ResultFilters = { elevation: [0, 90], overlap: [0, 100], useHorizon: true };
+
+export function filterPasses(passes: Pass[], f: ResultFilters, horizon: number | ((p: Pass) => number)) {
+  return passes.filter((p) => {
+    const h = typeof horizon === "function" ? horizon(p) : horizon;
+    const minEl = f.useHorizon ? Math.max(f.elevation[0], h) : f.elevation[0];
+    const share = overlapShare(p);
+    return p.maxElevation >= minEl && p.maxElevation <= f.elevation[1] && share >= f.overlap[0] && share <= f.overlap[1];
+  });
 }
 
 const time = new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit" });
@@ -264,13 +289,26 @@ export const formatDay = (d: Date) => capitalize(day.format(d).replace(" г.", "
 export const formatDayShort = (d: Date) => capitalize(dayShort.format(d));
 export const formatDateTime = (d: Date) => dateTime.format(d).replace(" г.", "").replace(" в ", ", ");
 export const dayKey = (d: Date) => d.toDateString();
+const dateOnly = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+/** «24 сентября 2026» — дата без «г.», как в карточках макета. */
+export const formatDate = (d: Date) => dateOnly.format(d).replace(" г.", "");
+/** «22 ноября 2026» или «22–23 ноября 2026», если наблюдения идут в разные дни. */
+export const formatDateRange = (from: Date, to: Date) =>
+  (dayKey(from) === dayKey(to) ? dateOnly.format(from) : dateOnly.formatRange(from, to)).replace(/ г\.$/, "").replace(" г.", "");
 
 export function formatDuration(from: Date, to: Date) {
   const total = Math.round((+to - +from) / 1000);
   const h = Math.floor(total / 3600);
   const m = Math.floor((total % 3600) / 60);
   const s = total % 60;
-  return [h && `${h} ч`, m && `${m} мин`, s && `${s} сек`].filter(Boolean).join(" ") || "0 сек";
+  return [h && `${h} ч`, m && `${m} мин`, s && `${s} сек`].filter(Boolean).join(", ") || "0 сек";
+}
+
+/** Короткая длительность словами: «20 минут», для длинных — как formatDuration. */
+export function formatLength(from: Date, to: Date) {
+  const total = Math.round((+to - +from) / 1000);
+  if (total < 3600 && total % 60 === 0) return plural(total / 60, "минута", "минуты", "минут");
+  return formatDuration(from, to);
 }
 
 export function plural(n: number, one: string, few: string, many: string) {
@@ -278,4 +316,114 @@ export function plural(n: number, one: string, few: string, many: string) {
   if (m10 === 1 && m100 !== 11) return `${n} ${one}`;
   if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return `${n} ${few}`;
   return `${n} ${many}`;
+}
+
+/* ---------- Автонаблюдения ---------- */
+
+export const AUTO_MAX_SATELLITES = 30;
+export const AUTO_MAX_PRIORITY = 30;
+
+export type Transmitter = { uuid: string; name: string; frequency: string; band: Band };
+
+/** Детерминированный UUID v4 для моков (в API приходят настоящие). */
+export function fakeUuid(seed: string) {
+  const rnd = random(seed);
+  const hex = Array.from({ length: 32 }, () => Math.floor(rnd() * 16).toString(16));
+  hex[12] = "4";
+  hex[16] = "89ab"[Math.floor(rnd() * 4)];
+  const s = hex.join("");
+  return `${s.slice(0, 8)}-${s.slice(8, 12)}-${s.slice(12, 16)}-${s.slice(16, 20)}-${s.slice(20)}`;
+}
+
+export const satelliteUuid = (id: string) => fakeUuid(`satellite-${id}`);
+
+/** Тип передатчика и его диапазон: APT/LRPT — 137 МГц (VHF), телеметрия и маяк — 435 МГц (UHF). */
+const TX_KINDS: { name: string; base: number; band: Band }[] = [
+  { name: "Телеметрия", base: 435, band: "UHF" },
+  { name: "APT", base: 137, band: "VHF" },
+  { name: "LRPT", base: 137, band: "VHF" },
+  { name: "Маяк", base: 435, band: "UHF" },
+  { name: "Транспондер", base: 145, band: "VHF" },
+];
+/** Передатчики спутника (моки): название, частота, UUID. */
+export function transmittersOf(sat: Satellite): Transmitter[] {
+  const rnd = random(`tx-${sat.id}`);
+  return Array.from({ length: sat.transmitters }, (_, i) => {
+    const kind = TX_KINDS[i % TX_KINDS.length];
+    return {
+      uuid: fakeUuid(`tx-${sat.id}-${i}`),
+      name: kind.name,
+      frequency: `${kind.base + Math.round(rnd() * 900) / 1000} МГц`,
+      band: kind.band,
+    };
+  });
+}
+
+/** Минимальный горизонт, заданный в настройках станции (моки). */
+export const stationHorizon = (s: Station) => [10, 5, 15, 20, 10][STATIONS.indexOf(s) % 5] ?? 10;
+
+export type AutoSchedule = {
+  minHorizon: number;
+  startAzimuth: number;
+  endAzimuth: number;
+  durationSeconds: number;
+  observationGapSeconds: number;
+  satellites: { satelliteUuid: string; transmitterUuid: string; priority: number }[];
+};
+
+/* ---------- Режим «Для спутника» ---------- */
+
+export const stationById = (id: number) => STATIONS.find((s) => s.id === id)!;
+
+/** Антенна станции под диапазон передатчика (или первая, если подходящей нет). */
+export const antennaFor = (station: Station, band: Band) => station.antennas.find((a) => a.band === band) ?? station.antennas[0];
+
+/** Станции, которые видят спутник в выбранный период и принимают диапазон передатчика (моки). */
+export function availableStations(satelliteId: string, tx: Transmitter, start: Date, hours: number): number[] {
+  const rnd = random(`${satelliteId}-${tx.uuid}-${+start}-${hours}`);
+  const fits = STATIONS.filter((s) => s.bands.includes(tx.band));
+  const list = fits.filter(() => rnd() < Math.min(0.9, 0.55 + hours / 40)).map((s) => s.id);
+  for (const s of [...fits, ...STATIONS]) if (list.length < 2 && !list.includes(s.id)) list.push(s.id);
+  return STATIONS.map((s) => s.id).filter((id) => list.includes(id));
+}
+
+/**
+ * Пролёты одного спутника над несколькими станциями. Пересечения — с наблюдениями,
+ * которые на станции уже заняты другим спутником. Id пролётов и отмен — «станция:пролёт».
+ */
+export function calculateSatellitePasses(
+  satelliteId: string,
+  tx: Transmitter,
+  stationIds: number[],
+  start: Date,
+  hours: number,
+  filters: Filters,
+  cancelled: Set<string>,
+): Pass[] {
+  const busy = SATELLITES.find((s) => s.active && s.id !== satelliteId)!.id;
+  return stationIds
+    .flatMap((id) => {
+      const station = stationById(id);
+      const prefix = `${id}:`;
+      const local = new Set([...cancelled].filter((c) => c.startsWith(prefix)).map((c) => c.slice(prefix.length)));
+      const all = calculatePasses(station, antennaFor(station, tx.band), [satelliteId, busy], start, hours, filters, local);
+      const taken = all.filter((p) => p.satelliteId === busy);
+      // Станция уже занята другим спутником: любое наложение — пересечение нашего пролёта, независимо от высоты.
+      return all
+        .filter((p) => p.satelliteId === satelliteId)
+        .map((p) => ({
+          ...p,
+          id: prefix + p.id,
+          stationId: id,
+          intersections: taken
+            .filter((b) => overlapSeconds(p, b) > 0)
+            .map((b) => ({
+              passId: prefix + b.id,
+              satelliteId: b.satelliteId,
+              from: new Date(Math.max(+p.start, +b.start)),
+              to: new Date(Math.min(+p.end, +b.end)),
+            })),
+        }));
+    })
+    .sort((a, b) => +a.start - +b.start);
 }

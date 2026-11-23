@@ -1,7 +1,11 @@
-import { Button, ButtonType } from "@sonik-space/ui/buttons";
+import { Button, ButtonSize, ButtonType } from "@sonik-space/ui/buttons";
 import { ErrorIcon, InfoIcon } from "@sonik-space/icons";
 import {
+  dayKey,
+  formatDate,
+  formatDateTime,
   formatDuration,
+  formatLength,
   formatTime,
   satelliteById,
   type Pass,
@@ -59,98 +63,104 @@ export function PassCard({ pass, added, onToggle, onCancelIntersection, showSate
   const satellite = satelliteById(pass.satelliteId);
   const truncated = pass.intersections.length > 0;
   const span = +pass.end - +pass.start;
+  const at = (d: Date) => `${((+d - +pass.start) / span) * 100}%`;
   return (
     <article className={`pass-card ${truncated ? "truncated" : ""} ${added ? "added" : ""}`}>
       {truncated && (
         <p className="pass-warning">
-          <InfoIcon width={16} height={16} fill="currentColor" aria-hidden="true" />
+          <InfoIcon width={20} height={20} fill="currentColor" aria-hidden="true" />
           Наблюдение будет усечено из-за пересечений
         </p>
       )}
-      <div className="pass-main">
-        <PolarPlot pass={pass} />
-        <dl className="pass-angles">
-          <div>
-            <dt className="aos">AOS</dt>
-            <dd>{pass.aos}°</dd>
-          </div>
-          <div>
-            <dt>TCA</dt>
-            <dd>{pass.tca}°</dd>
-          </div>
-          <div>
-            <dt className="los">LOS</dt>
-            <dd>{pass.los}°</dd>
-          </div>
-        </dl>
-        <dl className="pass-times">
-          {showSatellite && (
+      <div className="pass-body">
+        <div className="pass-main">
+          <PolarPlot pass={pass} />
+          <dl className="pass-angles">
             <div>
-              <dt>Спутник</dt>
-              <dd>{satellite.name}</dd>
+              <dt className="aos">AOS <span aria-hidden="true">⤉</span></dt>
+              <dd>{pass.aos}°</dd>
             </div>
-          )}
-          <div>
-            <dt>Восход</dt>
-            <dd>{formatTime(pass.start)}</dd>
-          </div>
-          <div>
-            <dt>Заход</dt>
-            <dd>{formatTime(pass.end)}</dd>
-          </div>
-          <div>
-            <dt>Длительность</dt>
-            <dd>{formatDuration(pass.start, pass.end)}</dd>
-          </div>
-          <div>
-            <dt>Макс. высота</dt>
-            <dd>{pass.maxElevation}°</dd>
-          </div>
-        </dl>
-        <Button
-          type="button"
-          className="pass-action"
-          text={added ? "Убрать" : "Добавить"}
-          buttonType={added ? ButtonType.GRAY : ButtonType.PRIMARY}
-          aria-pressed={added}
-          aria-label={`${added ? "Убрать из плана" : "Добавить в план"}: ${satellite.name}, ${formatTime(pass.start)}`}
-          onClick={onToggle}
-        />
+            <div>
+              <dt>TCA <span aria-hidden="true">⇴</span></dt>
+              <dd>{pass.tca}°</dd>
+            </div>
+            <div>
+              <dt className="los">LOS <span aria-hidden="true">⤈</span></dt>
+              <dd>{pass.los}°</dd>
+            </div>
+          </dl>
+          <dl className="pass-times">
+            {showSatellite && (
+              <div>
+                <dt>Спутник</dt>
+                <dd>{satellite.name}</dd>
+              </div>
+            )}
+            <div>
+              <dt>Восход</dt>
+              <dd>{formatTime(pass.start)}</dd>
+            </div>
+            <div>
+              <dt>Заход</dt>
+              <dd>
+                {formatTime(pass.end)}
+                {dayKey(pass.end) !== dayKey(pass.start) && <small className="pass-next-day"> {formatDate(pass.end)}</small>}
+              </dd>
+            </div>
+            <div>
+              <dt>Длительность</dt>
+              <dd>{formatDuration(pass.start, pass.end)}</dd>
+            </div>
+          </dl>
+          <Button
+            type="button"
+            className="pass-action"
+            buttonSize={ButtonSize.SMALL}
+            text={added ? "Убрать" : "Добавить"}
+            buttonType={added ? ButtonType.GRAY : ButtonType.PRIMARY}
+            aria-pressed={added}
+            aria-label={`${added ? "Убрать из плана" : "Добавить в план"}: ${satellite.name}, ${formatTime(pass.start)}`}
+            onClick={onToggle}
+          />
+        </div>
+        {pass.intersections.map((i) => {
+          const other = satelliteById(i.satelliteId);
+          return (
+            <div className="pass-intersection" key={i.passId}>
+              <div className="intersection-head">
+                <span className="intersection-title">
+                  <ErrorIcon width={20} height={20} fill="currentColor" aria-hidden="true" />
+                  Пересечение с {other.name}
+                </span>
+                <span className="intersection-range">
+                  <span>{formatDateTime(i.from)}</span>
+                  <span aria-hidden="true">-</span>
+                  <span>{formatDateTime(i.to)}</span>
+                </span>
+                <span className="intersection-length">{formatLength(i.from, i.to)}</span>
+                {onCancelIntersection && (
+                  <Button
+                    type="button"
+                    className="intersection-cancel"
+                    buttonSize={ButtonSize.SMALL}
+                    text="Отменить"
+                    buttonType={ButtonType.GRAY}
+                    aria-label={`Отменить наблюдение ${other.name} ${formatTime(i.from)} – ${formatTime(i.to)}`}
+                    onClick={() => onCancelIntersection(i.passId)}
+                  />
+                )}
+              </div>
+              <div className="intersection-track" aria-hidden="true">
+                <span style={{ left: at(i.from), right: `calc(100% - ${at(i.to)})` }} />
+              </div>
+              <div className="intersection-scale" aria-hidden="true">
+                <span style={{ left: at(i.from) }}>{formatTime(i.from)}</span>
+                <span style={{ left: at(i.to) }}>{formatTime(i.to)}</span>
+              </div>
+            </div>
+          );
+        })}
       </div>
-      {pass.intersections.map((i) => {
-        const other = satelliteById(i.satelliteId);
-        const left = ((+i.from - +pass.start) / span) * 100;
-        const width = ((+i.to - +i.from) / span) * 100;
-        return (
-          <div className="pass-intersection" key={i.passId}>
-            <div className="intersection-head">
-              <ErrorIcon width={16} height={16} fill="currentColor" aria-hidden="true" />
-              <span className="intersection-title">Пересечение с {other.name}</span>
-              <span className="intersection-range">
-                {formatTime(i.from)} – {formatTime(i.to)}
-              </span>
-              <span className="intersection-length">{formatDuration(i.from, i.to)}</span>
-              {onCancelIntersection && (
-                <Button
-                  type="button"
-                  className="intersection-cancel"
-                  text="Отменить"
-                  buttonType={ButtonType.GRAY}
-                  aria-label={`Отменить наблюдение ${other.name} ${formatTime(i.from)} – ${formatTime(i.to)}`}
-                  onClick={() => onCancelIntersection(i.passId)}
-                />
-              )}
-            </div>
-            <div className="intersection-track" aria-hidden="true">
-              <span style={{ left: `${left}%`, width: `${width}%` }} />
-            </div>
-            <div className="intersection-scale" aria-hidden="true">
-              <span>{formatTime(pass.start)}</span>
-              <span>{formatTime(pass.end)}</span>
-            </div>
-          </div>
-        );
-      })}
     </article>
   );
 }

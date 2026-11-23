@@ -171,3 +171,18 @@ button:focus-visible {
     transition: none !important;
   }
 }
+
+/* Modal из кита ставит портал и затемнение через position: absolute — при прокрученной
+   странице фон уезжает вверх и снизу остаётся светлая полоса. Закрепляем на весь экран. */
+body > [class*="_portal_"],
+body > [class*="_portal_"] > [class*="_backdrop_"] {
+  position: fixed;
+  inset: 0;
+}
+
+/* IconButton secondary из кита: подложка hover/active на ::after с z-index: -100 уходит под фон
+   родителя (например, белую панель Modal) — видно только смену цвета иконки. Изолируем кнопку,
+   чтобы подложка рисовалась под иконкой, но над фоном. */
+button[class*="_secondary_"] {
+  isolation: isolate;
+}
